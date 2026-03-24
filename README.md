@@ -297,52 +297,113 @@ powershell -ExecutionPolicy Bypass -File C:\Formation\scripts\check_all.ps1
 
 Les captures finales sont stockées dans [screenshots](screenshots) avec la numérotation complète de `01` à `44`.
 
-Liste des captures :
+### 01 à 10 — AD, DNS, DHCP, OU, utilisateurs
 
-1. `01_AD-Domain-Controllers.png`
-2. `02_DNS-Manager.png`
-3. `03_DNS-Zone-Directe.png`
-4. `04_DNS-Zone-Inverse.png`
-5. `05_PowerShell-Domain-Info.png`
-6. `06_DHCP-Scope-Config.png`
-7. `07_DHCP-Failover.png`
-8. `08_DHCP-Active-Leases.png`
-9. `09_AD-OU-Structure.png`
-10. `10_AD-Users-IT.png`
-11. `11_GPO-List.png`
-12. `12_GPO-Password-Policy.png`
-13. `13_Registry-LAPS-Config.png`
-14. `14_AD-Sites-Subnets.png`
-15. `15_PowerShell-PSO.png`
-16. `16_CertSrv-CA-Console.png`
-17. `17_CertSrv-CA-Properties.png`
-18. `18_Certmgr-Root-Store.png`
-19. `19_CertSrv-Issued-Certs.png`
-20. `20_PowerShell-LDAPS-Test.png`
-21. `21_LDP-LDAPS-Connection.png`
-22. `22_AD-Groupes.png`
-23. `23_PowerShell-FSMO.png`
-24. `24_AD-Replication.png`
-25. `25_GPO-Verrouillage-Compte.png`
-26. `26_Default-Domain-Policy.png`
-27. `27_GPO-AutoEnrollement.png`
-28. `28_SMB-Partages.png`
-29. `29_DFS-Namespace.png`
-30. `30_SMB-ABE-Commun.png`
-31. `31_FSRM-Filtre.png`
-32. `32_FSRM-Quotas.png`
-33. `33_GPO-Lecteurs-Reseau.png`
-34. `34_NPS-Console.png`
-35. `35_NPS-Clients-RADIUS.png`
-36. `36_NPS-Politique-Reseau.png`
-37. `37_NPS-Politique-Connexion.png`
-38. `38_FW-RADIUS-Ports.png`
-39. `39_SMB-Securite.png`
-40. `40_Registre-LSA-WDigest.png`
-41. `41_Firewall-Profils.png`
-42. `42_LAPS-Password-PC01.png`
-43. `43_LAPS-GPO-Config.png`
-44. `44_Check-All-Script.png`
+<p>
+    <img src="screenshots/01_AD-Domain-Controllers.png" width="48%" alt="01 AD Domain Controllers" />
+    <img src="screenshots/02_DNS-Manager.png" width="48%" alt="02 DNS Manager" />
+</p>
+<p>
+    <img src="screenshots/03_DNS-Zone-Directe.png" width="48%" alt="03 DNS Zone Directe" />
+    <img src="screenshots/04_DNS-Zone-Inverse.png" width="48%" alt="04 DNS Zone Inverse" />
+</p>
+<p>
+    <img src="screenshots/05_PowerShell-Domain-Info.png" width="48%" alt="05 PowerShell Domain Info" />
+    <img src="screenshots/06_DHCP-Scope-Config.png" width="48%" alt="06 DHCP Scope Config" />
+</p>
+<p>
+    <img src="screenshots/07_DHCP-Failover.png" width="48%" alt="07 DHCP Failover" />
+    <img src="screenshots/08_DHCP-Active-Leases.png" width="48%" alt="08 DHCP Active Leases" />
+</p>
+<p>
+    <img src="screenshots/09_AD-OU-Structure.png" width="48%" alt="09 AD OU Structure" />
+    <img src="screenshots/10_AD-Users-IT.png" width="48%" alt="10 AD Users IT" />
+</p>
+
+### 11 à 21 — GPO, LAPS, sites, PKI, LDAPS
+
+<p>
+    <img src="screenshots/11_GPO-List.png" width="48%" alt="11 GPO List" />
+    <img src="screenshots/12_GPO-Password-Policy.png" width="48%" alt="12 GPO Password Policy" />
+</p>
+<p>
+    <img src="screenshots/13_Registry-LAPS-Config.png" width="48%" alt="13 Registry LAPS Config" />
+    <img src="screenshots/14_AD-Sites-Subnets.png" width="48%" alt="14 AD Sites Subnets" />
+</p>
+<p>
+    <img src="screenshots/15_PowerShell-PSO.png" width="48%" alt="15 PowerShell PSO" />
+    <img src="screenshots/16_CertSrv-CA-Console.png" width="48%" alt="16 CertSrv CA Console" />
+</p>
+<p>
+    <img src="screenshots/17_CertSrv-CA-Properties.png" width="48%" alt="17 CertSrv CA Properties" />
+    <img src="screenshots/18_Certmgr-Root-Store.png" width="48%" alt="18 Certmgr Root Store" />
+</p>
+<p>
+    <img src="screenshots/19_CertSrv-Issued-Certs.png" width="48%" alt="19 CertSrv Issued Certs" />
+    <img src="screenshots/20_PowerShell-LDAPS-Test.png" width="48%" alt="20 PowerShell LDAPS Test" />
+</p>
+<p>
+    <img src="screenshots/21_LDP-LDAPS-Connection.png" width="48%" alt="21 LDP LDAPS Connection" />
+</p>
+
+### 22 à 27 — Groupes, FSMO, réplication, GPO de sécurité
+
+<p>
+    <img src="screenshots/22_AD-Groupes.png" width="48%" alt="22 AD Groupes" />
+    <img src="screenshots/23_PowerShell-FSMO.png" width="48%" alt="23 PowerShell FSMO" />
+</p>
+<p>
+    <img src="screenshots/24_AD-Replication.png" width="48%" alt="24 AD Replication" />
+    <img src="screenshots/25_GPO-Verrouillage-Compte.png" width="48%" alt="25 GPO Verrouillage Compte" />
+</p>
+<p>
+    <img src="screenshots/26_Default-Domain-Policy.png" width="48%" alt="26 Default Domain Policy" />
+    <img src="screenshots/27_GPO-AutoEnrollement.png" width="48%" alt="27 GPO AutoEnrollement" />
+</p>
+
+### 28 à 33 — SMB, DFS, FSRM, lecteurs réseau
+
+<p>
+    <img src="screenshots/28_SMB-Partages.png" width="48%" alt="28 SMB Partages" />
+    <img src="screenshots/29_DFS-Namespace.png" width="48%" alt="29 DFS Namespace" />
+</p>
+<p>
+    <img src="screenshots/30_SMB-ABE-Commun.png" width="48%" alt="30 SMB ABE Commun" />
+    <img src="screenshots/31_FSRM-Filtre.png" width="48%" alt="31 FSRM Filtre" />
+</p>
+<p>
+    <img src="screenshots/32_FSRM-Quotas.png" width="48%" alt="32 FSRM Quotas" />
+    <img src="screenshots/33_GPO-Lecteurs-Reseau.png" width="48%" alt="33 GPO Lecteurs Reseau" />
+</p>
+
+### 34 à 41 — NPS, pare-feu, sécurité SMB et registre
+
+<p>
+    <img src="screenshots/34_NPS-Console.png" width="48%" alt="34 NPS Console" />
+    <img src="screenshots/35_NPS-Clients-RADIUS.png" width="48%" alt="35 NPS Clients RADIUS" />
+</p>
+<p>
+    <img src="screenshots/36_NPS-Politique-Reseau.png" width="48%" alt="36 NPS Politique Reseau" />
+    <img src="screenshots/37_NPS-Politique-Connexion.png" width="48%" alt="37 NPS Politique Connexion" />
+</p>
+<p>
+    <img src="screenshots/38_FW-RADIUS-Ports.png" width="48%" alt="38 FW RADIUS Ports" />
+    <img src="screenshots/39_SMB-Securite.png" width="48%" alt="39 SMB Securite" />
+</p>
+<p>
+    <img src="screenshots/40_Registre-LSA-WDigest.png" width="48%" alt="40 Registre LSA WDigest" />
+    <img src="screenshots/41_Firewall-Profils.png" width="48%" alt="41 Firewall Profils" />
+</p>
+
+### 42 à 44 — LAPS et validation finale
+
+<p>
+    <img src="screenshots/42_LAPS-Password-PC01.png" width="48%" alt="42 LAPS Password PC01" />
+    <img src="screenshots/43_LAPS-GPO-Config.png" width="48%" alt="43 LAPS GPO Config" />
+</p>
+<p>
+    <img src="screenshots/44_Check-All-Script.png" width="48%" alt="44 Check All Script" />
+</p>
 
 ---
 
