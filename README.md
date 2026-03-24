@@ -297,113 +297,195 @@ powershell -ExecutionPolicy Bypass -File C:\Formation\scripts\check_all.ps1
 
 Les captures finales sont stockées dans [screenshots](screenshots) avec la numérotation complète de `01` à `44`.
 
-### 01 à 10 — AD, DNS, DHCP, OU, utilisateurs
+Chaque capture correspond à un contrôle précis du lab. La liste ci-dessous explique ce que montre chaque image et ce qu'elle valide.
 
-<p>
-    <img src="screenshots/01_AD-Domain-Controllers.png" width="48%" alt="01 AD Domain Controllers" />
-    <img src="screenshots/02_DNS-Manager.png" width="48%" alt="02 DNS Manager" />
-</p>
-<p>
-    <img src="screenshots/03_DNS-Zone-Directe.png" width="48%" alt="03 DNS Zone Directe" />
-    <img src="screenshots/04_DNS-Zone-Inverse.png" width="48%" alt="04 DNS Zone Inverse" />
-</p>
-<p>
-    <img src="screenshots/05_PowerShell-Domain-Info.png" width="48%" alt="05 PowerShell Domain Info" />
-    <img src="screenshots/06_DHCP-Scope-Config.png" width="48%" alt="06 DHCP Scope Config" />
-</p>
-<p>
-    <img src="screenshots/07_DHCP-Failover.png" width="48%" alt="07 DHCP Failover" />
-    <img src="screenshots/08_DHCP-Active-Leases.png" width="48%" alt="08 DHCP Active Leases" />
-</p>
-<p>
-    <img src="screenshots/09_AD-OU-Structure.png" width="48%" alt="09 AD OU Structure" />
-    <img src="screenshots/10_AD-Users-IT.png" width="48%" alt="10 AD Users IT" />
-</p>
+### 01 à 10 — Fondation AD, DNS, DHCP et structure logique
 
-### 11 à 21 — GPO, LAPS, sites, PKI, LDAPS
+**01 — Contrôleurs de domaine**  
+Montre la présence des serveurs de domaine et valide la base de l'infrastructure Active Directory.  
+<img src="screenshots/01_AD-Domain-Controllers.png" width="70%" alt="01 AD Domain Controllers" />
 
-<p>
-    <img src="screenshots/11_GPO-List.png" width="48%" alt="11 GPO List" />
-    <img src="screenshots/12_GPO-Password-Policy.png" width="48%" alt="12 GPO Password Policy" />
-</p>
-<p>
-    <img src="screenshots/13_Registry-LAPS-Config.png" width="48%" alt="13 Registry LAPS Config" />
-    <img src="screenshots/14_AD-Sites-Subnets.png" width="48%" alt="14 AD Sites Subnets" />
-</p>
-<p>
-    <img src="screenshots/15_PowerShell-PSO.png" width="48%" alt="15 PowerShell PSO" />
-    <img src="screenshots/16_CertSrv-CA-Console.png" width="48%" alt="16 CertSrv CA Console" />
-</p>
-<p>
-    <img src="screenshots/17_CertSrv-CA-Properties.png" width="48%" alt="17 CertSrv CA Properties" />
-    <img src="screenshots/18_Certmgr-Root-Store.png" width="48%" alt="18 Certmgr Root Store" />
-</p>
-<p>
-    <img src="screenshots/19_CertSrv-Issued-Certs.png" width="48%" alt="19 CertSrv Issued Certs" />
-    <img src="screenshots/20_PowerShell-LDAPS-Test.png" width="48%" alt="20 PowerShell LDAPS Test" />
-</p>
-<p>
-    <img src="screenshots/21_LDP-LDAPS-Connection.png" width="48%" alt="21 LDP LDAPS Connection" />
-</p>
+**02 — Console DNS**  
+Affiche la console DNS principale et confirme que le rôle DNS est bien installé et administrable.  
+<img src="screenshots/02_DNS-Manager.png" width="70%" alt="02 DNS Manager" />
 
-### 22 à 27 — Groupes, FSMO, réplication, GPO de sécurité
+**03 — Zone DNS directe**  
+Valide la zone de recherche directe du domaine `satom.local` et les enregistrements associés.  
+<img src="screenshots/03_DNS-Zone-Directe.png" width="70%" alt="03 DNS Zone Directe" />
 
-<p>
-    <img src="screenshots/22_AD-Groupes.png" width="48%" alt="22 AD Groupes" />
-    <img src="screenshots/23_PowerShell-FSMO.png" width="48%" alt="23 PowerShell FSMO" />
-</p>
-<p>
-    <img src="screenshots/24_AD-Replication.png" width="48%" alt="24 AD Replication" />
-    <img src="screenshots/25_GPO-Verrouillage-Compte.png" width="48%" alt="25 GPO Verrouillage Compte" />
-</p>
-<p>
-    <img src="screenshots/26_Default-Domain-Policy.png" width="48%" alt="26 Default Domain Policy" />
-    <img src="screenshots/27_GPO-AutoEnrollement.png" width="48%" alt="27 GPO AutoEnrollement" />
-</p>
+**04 — Zone DNS inverse**  
+Montre la zone de recherche inverse pour la résolution IP vers nom.  
+<img src="screenshots/04_DNS-Zone-Inverse.png" width="70%" alt="04 DNS Zone Inverse" />
 
-### 28 à 33 — SMB, DFS, FSRM, lecteurs réseau
+**05 — Informations domaine en PowerShell**  
+Confirme en ligne de commande les paramètres du domaine Active Directory.  
+<img src="screenshots/05_PowerShell-Domain-Info.png" width="70%" alt="05 PowerShell Domain Info" />
 
-<p>
-    <img src="screenshots/28_SMB-Partages.png" width="48%" alt="28 SMB Partages" />
-    <img src="screenshots/29_DFS-Namespace.png" width="48%" alt="29 DFS Namespace" />
-</p>
-<p>
-    <img src="screenshots/30_SMB-ABE-Commun.png" width="48%" alt="30 SMB ABE Commun" />
-    <img src="screenshots/31_FSRM-Filtre.png" width="48%" alt="31 FSRM Filtre" />
-</p>
-<p>
-    <img src="screenshots/32_FSRM-Quotas.png" width="48%" alt="32 FSRM Quotas" />
-    <img src="screenshots/33_GPO-Lecteurs-Reseau.png" width="48%" alt="33 GPO Lecteurs Reseau" />
-</p>
+**06 — Configuration du scope DHCP**  
+Montre l'étendue DHCP LAN et ses paramètres principaux.  
+<img src="screenshots/06_DHCP-Scope-Config.png" width="70%" alt="06 DHCP Scope Config" />
 
-### 34 à 41 — NPS, pare-feu, sécurité SMB et registre
+**07 — Failover DHCP**  
+Valide la relation de bascule `FO-DC01-DC02` en mode `LoadBalance`.  
+<img src="screenshots/07_DHCP-Failover.png" width="70%" alt="07 DHCP Failover" />
 
-<p>
-    <img src="screenshots/34_NPS-Console.png" width="48%" alt="34 NPS Console" />
-    <img src="screenshots/35_NPS-Clients-RADIUS.png" width="48%" alt="35 NPS Clients RADIUS" />
-</p>
-<p>
-    <img src="screenshots/36_NPS-Politique-Reseau.png" width="48%" alt="36 NPS Politique Reseau" />
-    <img src="screenshots/37_NPS-Politique-Connexion.png" width="48%" alt="37 NPS Politique Connexion" />
-</p>
-<p>
-    <img src="screenshots/38_FW-RADIUS-Ports.png" width="48%" alt="38 FW RADIUS Ports" />
-    <img src="screenshots/39_SMB-Securite.png" width="48%" alt="39 SMB Securite" />
-</p>
-<p>
-    <img src="screenshots/40_Registre-LSA-WDigest.png" width="48%" alt="40 Registre LSA WDigest" />
-    <img src="screenshots/41_Firewall-Profils.png" width="48%" alt="41 Firewall Profils" />
-</p>
+**08 — Baux DHCP actifs**  
+Affiche les clients ayant reçu une adresse IP via DHCP.  
+<img src="screenshots/08_DHCP-Active-Leases.png" width="70%" alt="08 DHCP Active Leases" />
+
+**09 — Structure des OUs**  
+Montre l'arborescence `_SATOM`, les sites et les unités organisationnelles.  
+<img src="screenshots/09_AD-OU-Structure.png" width="70%" alt="09 AD OU Structure" />
+
+**10 — Utilisateurs IT**  
+Valide la création des comptes utilisateurs dans l'OU cible.  
+<img src="screenshots/10_AD-Users-IT.png" width="70%" alt="10 AD Users IT" />
+
+### 11 à 21 — GPO, LAPS, PKI et LDAPS
+
+**11 — Liste des GPO**  
+Affiche l'ensemble des GPO créées pour le lab.  
+<img src="screenshots/11_GPO-List.png" width="70%" alt="11 GPO List" />
+
+**12 — GPO de mot de passe**  
+Montre la stratégie de mot de passe configurée au niveau GPO.  
+<img src="screenshots/12_GPO-Password-Policy.png" width="70%" alt="12 GPO Password Policy" />
+
+**13 — Configuration registre LAPS**  
+Valide la présence des paramètres LAPS côté registre / politique.  
+<img src="screenshots/13_Registry-LAPS-Config.png" width="70%" alt="13 Registry LAPS Config" />
+
+**14 — Sites et sous-réseaux AD**  
+Affiche les sites `Site-Paris`, `Site-Bordeaux` et le mapping des subnets.  
+<img src="screenshots/14_AD-Sites-Subnets.png" width="70%" alt="14 AD Sites Subnets" />
+
+**15 — PSO en PowerShell**  
+Montre la stratégie de mot de passe fine `PSO-Admins`.  
+<img src="screenshots/15_PowerShell-PSO.png" width="70%" alt="15 PowerShell PSO" />
+
+**16 — Console de l'autorité de certification**  
+Valide l'installation d'AD CS et l'accès à la console CA.  
+<img src="screenshots/16_CertSrv-CA-Console.png" width="70%" alt="16 CertSrv CA Console" />
+
+**17 — Propriétés de la CA**  
+Montre la configuration de l'autorité de certification.  
+<img src="screenshots/17_CertSrv-CA-Properties.png" width="70%" alt="17 CertSrv CA Properties" />
+
+**18 — Magasin racine de certificats**  
+Confirme la présence du certificat racine dans le magasin local.  
+<img src="screenshots/18_Certmgr-Root-Store.png" width="70%" alt="18 Certmgr Root Store" />
+
+**19 — Certificats émis**  
+Affiche les certificats délivrés par la CA interne.  
+<img src="screenshots/19_CertSrv-Issued-Certs.png" width="70%" alt="19 CertSrv Issued Certs" />
+
+**20 — Test LDAPS PowerShell**  
+Valide l'écoute et la connectivité sur le port `636`.  
+<img src="screenshots/20_PowerShell-LDAPS-Test.png" width="70%" alt="20 PowerShell LDAPS Test" />
+
+**21 — Connexion LDAPS avec LDP**  
+Montre une connexion LDAPS graphique réussie.  
+<img src="screenshots/21_LDP-LDAPS-Connection.png" width="70%" alt="21 LDP LDAPS Connection" />
+
+### 22 à 27 — Groupes AD, FSMO, réplication et GPO de sécurité
+
+**22 — Groupes AD**  
+Valide la création et l'organisation des groupes de sécurité.  
+<img src="screenshots/22_AD-Groupes.png" width="70%" alt="22 AD Groupes" />
+
+**23 — Rôles FSMO**  
+Montre les rôles FSMO détenus par `DC01`.  
+<img src="screenshots/23_PowerShell-FSMO.png" width="70%" alt="23 PowerShell FSMO" />
+
+**24 — Réplication Active Directory**  
+Confirme l'état de la réplication entre contrôleurs de domaine.  
+<img src="screenshots/24_AD-Replication.png" width="70%" alt="24 AD Replication" />
+
+**25 — GPO verrouillage de compte**  
+Montre la stratégie de verrouillage après tentatives échouées.  
+<img src="screenshots/25_GPO-Verrouillage-Compte.png" width="70%" alt="25 GPO Verrouillage Compte" />
+
+**26 — Default Domain Policy**  
+Capture de la stratégie de domaine par défaut.  
+<img src="screenshots/26_Default-Domain-Policy.png" width="70%" alt="26 Default Domain Policy" />
+
+**27 — GPO auto-enrôlement PKI**  
+Valide l'auto-enrôlement des certificats via stratégie de groupe.  
+<img src="screenshots/27_GPO-AutoEnrollement.png" width="70%" alt="27 GPO AutoEnrollement" />
+
+### 28 à 33 — Serveur de fichiers, DFS, FSRM et lecteurs réseau
+
+**28 — Partages SMB**  
+Affiche les partages publiés sur le serveur de fichiers.  
+<img src="screenshots/28_SMB-Partages.png" width="70%" alt="28 SMB Partages" />
+
+**29 — Namespace DFS**  
+Montre l'espace de noms DFS et sa structure logique.  
+<img src="screenshots/29_DFS-Namespace.png" width="70%" alt="29 DFS Namespace" />
+
+**30 — ABE sur partage commun**  
+Valide l'Access-Based Enumeration sur le partage commun.  
+<img src="screenshots/30_SMB-ABE-Commun.png" width="70%" alt="30 SMB ABE Commun" />
+
+**31 — Filtrage FSRM**  
+Montre une règle de filtrage de fichiers via FSRM.  
+<img src="screenshots/31_FSRM-Filtre.png" width="70%" alt="31 FSRM Filtre" />
+
+**32 — Quotas FSRM**  
+Valide la mise en place des quotas de stockage.  
+<img src="screenshots/32_FSRM-Quotas.png" width="70%" alt="32 FSRM Quotas" />
+
+**33 — GPO lecteurs réseau**  
+Montre la politique de mappage des lecteurs réseau pour les utilisateurs.  
+<img src="screenshots/33_GPO-Lecteurs-Reseau.png" width="70%" alt="33 GPO Lecteurs Reseau" />
+
+### 34 à 41 — NPS, RADIUS, pare-feu et durcissement sécurité
+
+**34 — Console NPS**  
+Valide l'installation du rôle NPS / NPAS.  
+<img src="screenshots/34_NPS-Console.png" width="70%" alt="34 NPS Console" />
+
+**35 — Clients RADIUS**  
+Montre les équipements déclarés comme clients RADIUS.  
+<img src="screenshots/35_NPS-Clients-RADIUS.png" width="70%" alt="35 NPS Clients RADIUS" />
+
+**36 — Stratégies réseau NPS**  
+Affiche les `Network Policies` configurées.  
+<img src="screenshots/36_NPS-Politique-Reseau.png" width="70%" alt="36 NPS Politique Reseau" />
+
+**37 — Stratégies de demande de connexion**  
+Montre les `Connection Request Policies`.  
+<img src="screenshots/37_NPS-Politique-Connexion.png" width="70%" alt="37 NPS Politique Connexion" />
+
+**38 — Pare-feu RADIUS**  
+Valide l'ouverture des ports nécessaires au service RADIUS.  
+<img src="screenshots/38_FW-RADIUS-Ports.png" width="70%" alt="38 FW RADIUS Ports" />
+
+**39 — Sécurité SMB**  
+Montre le durcissement SMB : signature, chiffrement, SMBv1 désactivé.  
+<img src="screenshots/39_SMB-Securite.png" width="70%" alt="39 SMB Securite" />
+
+**40 — Registre LSA / WDigest**  
+Valide les paramètres de sécurité sensibles dans le registre.  
+<img src="screenshots/40_Registre-LSA-WDigest.png" width="70%" alt="40 Registre LSA WDigest" />
+
+**41 — Profils pare-feu**  
+Affiche l'état des profils du pare-feu Windows.  
+<img src="screenshots/41_Firewall-Profils.png" width="70%" alt="41 Firewall Profils" />
 
 ### 42 à 44 — LAPS et validation finale
 
-<p>
-    <img src="screenshots/42_LAPS-Password-PC01.png" width="48%" alt="42 LAPS Password PC01" />
-    <img src="screenshots/43_LAPS-GPO-Config.png" width="48%" alt="43 LAPS GPO Config" />
-</p>
-<p>
-    <img src="screenshots/44_Check-All-Script.png" width="48%" alt="44 Check All Script" />
-</p>
+**42 — Mot de passe LAPS de PC01**  
+Montre la récupération du secret administrateur local géré par LAPS.  
+<img src="screenshots/42_LAPS-Password-PC01.png" width="70%" alt="42 LAPS Password PC01" />
+
+**43 — GPO LAPS**  
+Valide les paramètres de la GPO `GPO-LAPS-Configuration`.  
+<img src="screenshots/43_LAPS-GPO-Config.png" width="70%" alt="43 LAPS GPO Config" />
+
+**44 — Validation finale `check_all.ps1`**  
+Capture de synthèse confirmant le bon état global du lab.  
+<img src="screenshots/44_Check-All-Script.png" width="70%" alt="44 Check All Script" />
 
 ---
 
