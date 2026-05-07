@@ -118,3 +118,17 @@ Write-Host "FW RADIUS-1812  : $(if($fw1812){'PRESENT'}else{'ABSENT'})"
 Write-Host "FW RADIUS-1813  : $(if($fw1813){'PRESENT'}else{'ABSENT'})"
 Write-Host "GPO NPS Clients : $(if($npsGpo){'GPO-NPS-RADIUS-Clients PRESENTE'}else{'ABSENTE'})"
 Write-Host "Logs NPS        : $(if($npsLog){'PRESENT'}else{'ABSENT'})"
+
+Write-Host "`n=== SECURITE OFFENSIVE CONTROLEE (M20) ===" -ForegroundColor Cyan
+$repoRoot   = Split-Path $PSScriptRoot -Parent
+$tp08       = Join-Path $repoRoot 'lab\TP_08_Securite-Offensive.ps1'
+$offOu      = Get-ADOrganizationalUnit -LDAPFilter '(ou=OffensiveLab)' -ErrorAction SilentlyContinue
+$offUsers   = Get-ADUser -Filter {SamAccountName -like "olab.*" -or SamAccountName -eq "svc-ol-web"} -Properties ServicePrincipalName,Enabled -ErrorAction SilentlyContinue
+$offReports = Get-ChildItem 'C:\Formation\Reports\Offensive' -Filter 'offensive_detection_report_*.md' -ErrorAction SilentlyContinue
+$offSource  = $false
+try { $offSource = [System.Diagnostics.EventLog]::SourceExists('SATOM-OffensiveLab') } catch {}
+Write-Host "Script TP08     : $(if(Test-Path $tp08){'PRESENT'}else{'ABSENT'})"
+Write-Host "OU OffensiveLab : $(if($offOu){'PRESENTE'}else{'ABSENTE (non execute ou nettoyee)'})"
+Write-Host "Comptes test    : $(@($offUsers).Count)"
+Write-Host "Event source    : $(if($offSource){'SATOM-OffensiveLab PRESENTE'}else{'ABSENTE'})"
+Write-Host "Rapports M20    : $(@($offReports).Count)"

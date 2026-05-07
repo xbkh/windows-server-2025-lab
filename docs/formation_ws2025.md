@@ -34,7 +34,7 @@ La validation finale exécutée avec `check_all.ps1` confirme notamment :
 
 ## Captures d'écran du rendu final
 
-44 captures d'écran finales sont stockées dans `screenshots/`, de `01_AD-Domain-Controllers.png` à `44_Check-All-Script.png`.
+55 captures d'écran finales sont stockées dans `screenshots/`, de `01_AD-Domain-Controllers.png` à `54_CheckAll-M20.png`, avec des variantes pour les captures `48` et `53`.
 
 Les captures couvrent notamment :
 
@@ -43,6 +43,7 @@ Les captures couvrent notamment :
 - LAPS, PSO, PKI, LDAPS
 - DFS, FSRM, partages SMB
 - NPS / RADIUS
+- sécurité offensive contrôlée / purple team
 - validation finale du lab
 
 # Module 00 : LAB - Environnement de laboratoire virtuel
@@ -78,6 +79,8 @@ Les captures couvrent notamment :
 # Module 15 : Installation et configuration de l'infrastructure de virtualisation
 
 # Module 16 : Cloud hybride avec Azure Arc et synthèse finale
+
+# Module 20 : Sécurité offensive contrôlée et validation purple team
 
 ---
 

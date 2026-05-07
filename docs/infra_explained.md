@@ -21,8 +21,9 @@
 12. [Services fichiers — SMB, DFS, FSRM](#12-services-fichiers--smb-dfs-fsrm)
 13. [NPS / RADIUS](#13-nps--radius)
 14. [Azure Arc](#14-azure-arc)
-15. [Comment tout s'articule](#15-comment-tout-sarticule)
-16. [Glossaire](#16-glossaire)
+15. [Sécurité offensive contrôlée](#15-sécurité-offensive-contrôlée)
+16. [Comment tout s'articule](#16-comment-tout-sarticule)
+17. [Glossaire](#17-glossaire)
 
 ---
 
@@ -47,6 +48,8 @@ Réseau interne : 192.168.122.0/24
 
 **Domaine :** `satom.local`  
 **Tous les rôles tournent sur Windows Server 2025.**
+
+Une VM offensive optionnelle peut être ajoutée au même réseau NAT pour tester la sécurité du domaine de façon contrôlée. Elle est décrite dans la section [Sécurité offensive contrôlée](#15-sécurité-offensive-contrôlée).
 
 ---
 
@@ -602,7 +605,157 @@ Azure Arc était prévu pour DC01 mais n'a pas pu être finalisé : la **subscri
 
 ---
 
-## 15. Comment tout s'articule
+## 15. Sécurité offensive contrôlée
+
+### Objectif de la partie offensive
+
+La sécurité offensive du lab sert à **valider concrètement les défenses Active Directory** déjà mises en place : LAPS, durcissement SMB, politiques de mot de passe, audit, PKI/LDAPS, segmentation logique et droits d'administration.
+
+L'idée n'est pas d'attaquer un système réel, mais de reproduire dans un environnement isolé des comportements d'attaquant courants afin de répondre à trois questions :
+
+- qu'est-ce qui est exposé ?
+- qu'est-ce qui est détecté ?
+- qu'est-ce qui doit être corrigé ?
+
+Cette approche correspond à une logique **purple team** : l'attaque sert directement à améliorer la défense.
+
+### Cadre et périmètre
+
+| Règle | Application dans le lab |
+|-------|--------------------------|
+| **Autorisation** | Les tests sont limités au domaine `satom.local` et aux VMs du lab. |
+| **Isolation** | Le réseau KVM `192.168.122.0/24` reste séparé de tout réseau de production. |
+| **Traçabilité** | Chaque scénario doit produire des observations côté journaux Windows, AD ou réseau. |
+| **Réversibilité** | Un snapshot est pris avant chaque TP offensif. |
+| **Comptes de test** | Les comptes vulnérables sont créés volontairement, documentés, puis supprimés. |
+| **Pas de réutilisation externe** | Les secrets, hashes, tickets et captures restent dans le lab. |
+
+### VM offensive optionnelle
+
+Une quatrième VM peut être ajoutée :
+
+| Élément | Valeur recommandée |
+|---------|--------------------|
+| Nom | `ATTACK01` |
+| OS | Kali Linux, Parrot Security ou Windows avec outils d'audit AD |
+| IP | `192.168.122.60` |
+| Réseau | Même bridge/NAT KVM que DC01, DC02 et PC01 |
+| Rôle | Poste d'audit offensif et de validation sécurité |
+
+```
+Réseau interne : 192.168.122.0/24
+DC01      192.168.122.10   AD DS, DNS, DHCP, CA, NPS
+DC02      192.168.122.20   DC secondaire, DHCP failover
+PC01      192.168.122.50   Client domaine
+ATTACK01  192.168.122.60   VM offensive contrôlée
+```
+
+### Préparation avant les tests
+
+Avant un scénario offensif :
+
+- vérifier que DC01, DC02 et PC01 sont synchronisés et fonctionnels
+- prendre un snapshot des VMs concernées
+- activer l'audit avancé sur les DCs et PC01
+- créer des comptes de test non critiques
+- noter l'heure de début et de fin du test
+- prévoir une action de remédiation pour chaque faiblesse volontairement introduite
+
+Les journaux utiles sont notamment :
+
+| Source | Utilité |
+|--------|---------|
+| **Security** | ouvertures de session, échecs, changements de groupes, événements Kerberos |
+| **Directory Service** | accès aux objets AD sensibles |
+| **DNS Server** | requêtes DNS vers les services du domaine |
+| **SMBClient / SMBServer** | accès aux partages, signature et chiffrement SMB |
+| **PowerShell Operational** | exécution de scripts et commandes PowerShell |
+| **Certificate Services** | demandes et émissions de certificats AD CS |
+
+### Scénarios offensifs pédagogiques
+
+| Scénario | Ce que l'on teste | Signes à observer | Défense attendue |
+|----------|-------------------|-------------------|------------------|
+| **Reconnaissance AD** | Capacité à cartographier le domaine, les OUs, groupes, partages et DCs | Requêtes LDAP/DNS, accès SMB, lecture d'objets AD | Moindre privilège, durcissement des partages, audit des accès |
+| **Password spraying contrôlé** | Résistance des comptes à quelques tentatives de mots de passe faibles | Événements `4625`, verrouillages, pics d'échecs Kerberos | PSO, verrouillage de compte, mots de passe robustes |
+| **AS-REP Roasting** | Présence de comptes sans préauthentification Kerberos | Échecs ou demandes Kerberos anormales (`4768`, `4771`) | Préauthentification obligatoire, audit des attributs utilisateurs |
+| **Kerberoasting** | Robustesse des comptes de service avec SPN | Nombre inhabituel de tickets de service (`4769`) | gMSA/dMSA, mots de passe longs, rotation, AES |
+| **Abus de privilèges locaux** | Possibilité de réutiliser un compte admin local sur plusieurs machines | Connexions locales/admin, accès à `ADMIN$`, événements `4624` type 3 | LAPS, comptes admin uniques, pare-feu local |
+| **Pass-the-Hash simulé** | Risque lié aux authentifications NTLM | Connexions NTLM, absence de Kerberos, accès SMB suspects | `LmCompatibilityLevel=5`, SMB signing, réduction NTLM |
+| **Délégation AD excessive** | Droits trop larges sur OUs, groupes ou objets ordinateur | Modifications AD (`4732`, `4738`, `4662`) | ACL minimales, revue des délégations, séparation des rôles |
+| **AD CS abuse review** | Modèles de certificats trop permissifs | Demandes de certificats inhabituelles, événements CA | Templates restreints, approbation manuelle, EKU contrôlés |
+| **DCSync simulé** | Capacité d'un compte à répliquer les secrets AD | Accès Directory Service sensibles, événements `4662` | Droits de réplication réservés aux DCs et admins stricts |
+| **Accès fichiers non autorisé** | Exposition des partages SMB et DFS | Événements `5140`, `5145`, refus NTFS | ACL NTFS, ABE, quotas et file screening FSRM |
+
+Ces scénarios restent descriptifs et encadrés dans la documentation principale. La réalisation pratique est fournie dans `lab/TP_08_Securite-Offensive.ps1` et détaillée dans `docs/tp08_securite_offensive.md`.
+
+### Chaîne d'attaque pédagogique
+
+Un enchaînement réaliste pour le lab :
+
+```
+1. ATTACK01 découvre le domaine satom.local
+        ↓
+2. Enumération contrôlée des DCs, partages, utilisateurs et groupes
+        ↓
+3. Recherche de mauvaises configurations volontaires
+        ↓
+4. Tentative d'accès avec un compte de test limité
+        ↓
+5. Observation des journaux sur DC01, DC02 et PC01
+        ↓
+6. Correction : GPO, ACL, PSO, LAPS, SMB, AD CS
+        ↓
+7. Re-test pour confirmer que le risque est réduit
+```
+
+### Mesures défensives déjà présentes dans le lab
+
+| Défense | Risque réduit |
+|---------|---------------|
+| **LAPS** | Réutilisation du mot de passe administrateur local |
+| **PSO-Admins** | Compromission de comptes privilégiés par mot de passe faible |
+| **WDigest désactivé** | Extraction de mots de passe en clair depuis LSASS |
+| **LmCompatibilityLevel = 5** | Authentification LM/NTLM ancienne |
+| **SMBv1 désactivé** | Exploitation de vieux protocoles SMB |
+| **SMB signing/encryption** | Relay, interception et modification du trafic SMB |
+| **LDAPS / PKI** | Interception des requêtes LDAP sensibles |
+| **Audit avancé** | Manque de visibilité sur les actions suspectes |
+| **FSRM / DFS / ACL NTFS** | Exposition excessive des données partagées |
+
+### Indicateurs de compromission à connaître
+
+| Event ID | Signification |
+|----------|---------------|
+| `4624` | Ouverture de session réussie |
+| `4625` | Échec d'ouverture de session |
+| `4672` | Privilèges spéciaux attribués à une nouvelle session |
+| `4688` | Création d'un processus |
+| `4720` | Création d'un compte utilisateur |
+| `4732` | Ajout d'un membre dans un groupe local |
+| `4738` | Modification d'un compte utilisateur |
+| `4768` | Demande de TGT Kerberos |
+| `4769` | Demande de ticket de service Kerberos |
+| `4771` | Échec de préauthentification Kerberos |
+| `5140` | Accès à un partage réseau |
+| `5145` | Vérification détaillée d'accès à un partage |
+| `7045` | Installation d'un service Windows |
+| `1102` | Journal d'audit effacé |
+
+### Nettoyage après test
+
+Après chaque exercice offensif :
+
+- supprimer les comptes, SPN et délégations vulnérables créés pour le TP
+- révoquer les certificats de test non nécessaires
+- forcer la réplication AD entre DC01 et DC02
+- exécuter `scripts/check_all.ps1`
+- exporter les événements utiles pour le rapport
+- restaurer le snapshot si le scénario a modifié l'état du domaine
+
+---
+
+## 16. Comment tout s'articule
 
 Voici le flux complet depuis le démarrage d'un PC jusqu'à l'accès à un fichier partagé :
 
@@ -632,9 +785,11 @@ Voici le flux complet depuis le démarrage d'un PC jusqu'à l'accès à un fichi
            (émis par satom-DC01-CA, distribué par auto-enrôlement)
 ```
 
+La couche offensive contrôlée intervient ensuite pour tester ce flux : elle vérifie si un attaquant de lab peut découvrir les services, obtenir trop d'informations, contourner les politiques, accéder aux partages ou abuser de permissions AD. Chaque test doit produire une preuve défensive : événement Windows, trace réseau, correction GPO/ACL ou résultat de validation.
+
 ---
 
-## 16. Glossaire
+## 17. Glossaire
 
 | Terme | Définition |
 |-------|-----------|
@@ -643,17 +798,23 @@ Voici le flux complet depuis le démarrage d'un PC jusqu'à l'accès à un fichi
 | **AD DS** | Active Directory Domain Services — service d'annuaire |
 | **ADML** | Administrative Template Language — fichiers de langue pour ADMX |
 | **ADMX** | Administrative Template XML — modèles de GPO |
+| **AS-REP Roasting** | Technique d'audit Kerberos ciblant les comptes sans préauthentification |
+| **Attack Path** | Chemin d'actions ou de permissions permettant d'atteindre un privilège plus élevé |
+| **BloodHound** | Outil de cartographie des relations et chemins de privilèges Active Directory |
 | **CA** | Certificate Authority — Autorité de Certification |
 | **DC** | Domain Controller — contrôleur de domaine |
 | **DHCP** | Dynamic Host Configuration Protocol — attribution IP automatique |
 | **DFS** | Distributed File System — espace de noms fichier unifié |
 | **DNS** | Domain Name System — résolution nom → IP |
+| **DCSync** | Abus de droits de réplication AD permettant de demander des secrets au domaine |
 | **FSMO** | Flexible Single Master Operations — rôles AD uniques par DC |
 | **FSRM** | File Server Resource Manager — gestion quotas et filtrage fichiers |
 | **GPO** | Group Policy Object — objet de stratégie de groupe |
 | **GPMC** | Group Policy Management Console — console de gestion des GPO |
+| **IOC** | Indicator of Compromise — trace pouvant indiquer une compromission |
 | **KCC** | Knowledge Consistency Checker — calcule la topologie de réplication |
 | **KDC** | Key Distribution Center — service Kerberos sur le DC |
+| **Kerberoasting** | Technique d'audit ciblant les tickets de service Kerberos associés aux comptes avec SPN |
 | **KVM** | Kernel-based Virtual Machine — hyperviseur Linux |
 | **LAPS** | Local Administrator Password Solution — gestion MDP admin local |
 | **LDAP** | Lightweight Directory Access Protocol — protocole d'interrogation AD |
@@ -664,8 +825,10 @@ Voici le flux complet depuis le démarrage d'un PC jusqu'à l'accès à un fichi
 | **NTLM** | NT LAN Manager — protocole d'auth Windows |
 | **NPS** | Network Policy Server — serveur RADIUS Microsoft |
 | **OU** | Organizational Unit — unité d'organisation dans AD |
+| **Pass-the-Hash** | Technique d'authentification abusive utilisant un hash NTLM au lieu du mot de passe en clair |
 | **PDC** | Primary Domain Controller — DC portant le rôle PDC Emulator |
 | **PKI** | Public Key Infrastructure — infrastructure de gestion des certificats |
+| **Purple Team** | Collaboration offensive/défensive où les tests d'attaque servent à améliorer la détection et le durcissement |
 | **PSO** | Password Settings Object — politique MDP granulaire |
 | **RADIUS** | Remote Authentication Dial-In User Service — auth centralisée réseau |
 | **RID** | Relative Identifier — partie variable du SID |
@@ -682,4 +845,4 @@ Voici le flux complet depuis le démarrage d'un PC jusqu'à l'accès à un fichi
 
 ---
 
-*Document généré le 26 mars 2026 — Infrastructure satom.local, Windows Server 2025*
+*Document généré le 26 mars 2026 — mis à jour le 7 mai 2026 — Infrastructure satom.local, Windows Server 2025*

@@ -13,7 +13,7 @@
     Votre nom complet (apparait dans le rapport)
 
 .PARAMETER Module
-    Numero du module a executer (0 a 4), ou "Tous"
+    Numero du module a executer (0 a 5), ou "Tous"
 
 .PARAMETER GeneratePDF
     Generer un PDF en plus du HTML (necessite Chrome)
@@ -34,7 +34,7 @@ param(
     [Parameter(Mandatory)]
     [string]$NomEtudiant,
 
-    [ValidateSet("0","1","2","3","4","Tous","Validation")]
+    [ValidateSet("0","1","2","3","4","5","Tous","Validation")]
     [string]$Module = "0",
 
     [string]$DomainName     = "satom.local",
@@ -69,11 +69,12 @@ $moduleLabels = @{
     "2" = "Module 04-05 - OUs / Users / GPO"
     "3" = "Module 07-15 - Securite / LAPS / Hyper-V"
     "4" = "Module 16 - Azure Arc & Validation"
+    "5" = "Module 20 - Securite offensive controlee"
     "Validation" = "Validation Globale"
     "Tous" = "Formation Complete"
 }
 
-$moduleToRun = if ($Module -eq "Tous") { @("0","1","2","3","4") } else { @($Module) }
+$moduleToRun = if ($Module -eq "Tous") { @("0","1","2","3","4","5") } else { @($Module) }
 #endregion
 
 #region --- Bannire ----------------------------------------------------------
@@ -342,6 +343,38 @@ foreach ($mod in $moduleToRun) {
             )
 
             $reportPath = "$OutputDir\TP04_Validation-Finale_$(Get-Date -Format 'HHmm').html"
+            New-LabReport -OutputPath $reportPath $(if ($GeneratePDF) {"-AsPdf"}) -StudentName $NomEtudiant
+        }
+        #endregion
+
+        #region --- MODULE 5 : Securite offensive controlee --------------------
+        "5" {
+            Start-LabDoc -Title $moduleLabels["5"] -StudentName $NomEtudiant -Module "TP 08"
+
+            $offensiveOut = Join-Path $OutputDir "OffensiveLab"
+
+            Add-DocStep -Title "Demarrage du TP securite offensive controlee" `
+                        -Description "Creation d'une OU OffensiveLab, activation des audits, simulation defensive et rapport de detection" `
+                        -Status "info" -Screenshot
+
+            & (Get-ScriptPath "TP_08_Securite-Offensive.ps1") -Module "All" -DomainName $DomainName -OutputDir $offensiveOut
+
+            Invoke-DocCheck -Module "Securite offensive controlee" -Checks @(
+                @{Title="OU OffensiveLab";
+                  Command='Get-ADOrganizationalUnit -LDAPFilter "(ou=OffensiveLab)" | Select-Object Name,DistinguishedName | Format-List'},
+                @{Title="Comptes de test OffensiveLab";
+                  Command='Get-ADUser -Filter {SamAccountName -like "olab.*" -or SamAccountName -eq "svc-ol-web"} -Properties ServicePrincipalName,Enabled,Description | Select-Object SamAccountName,Enabled,Description,@{N="SPN";E={$_.ServicePrincipalName -join ";"}} | Format-Table -AutoSize'},
+                @{Title="Groupes privilegies surveilles";
+                  Command='$d=(Get-ADDomain).DomainSID.Value; Get-ADGroup -Filter * -Properties SID | Where-Object {$_.SID.Value -in @("$d-512","$d-519","S-1-5-32-544")} | Select-Object Name,SID | Format-Table -AutoSize'},
+                @{Title="Comptes sans preauth Kerberos";
+                  Command='Get-ADUser -LDAPFilter "(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))" -Properties Description,Enabled | Select-Object SamAccountName,Enabled,Description | Format-Table -AutoSize'},
+                @{Title="Evenements de simulation OffensiveLab";
+                  Command='Get-WinEvent -FilterHashtable @{LogName="Application";ProviderName="SATOM-OffensiveLab";StartTime=(Get-Date).AddHours(-4)} -MaxEvents 20 -EA SilentlyContinue | Select-Object TimeCreated,Id,Message | Format-Table -Wrap -AutoSize'},
+                @{Title="Rapports generes";
+                  Command="Get-ChildItem '$offensiveOut' -Recurse -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 FullName,Length,LastWriteTime | Format-Table -AutoSize"}
+            )
+
+            $reportPath = "$OutputDir\TP08_Securite-Offensive_$(Get-Date -Format 'HHmm').html"
             New-LabReport -OutputPath $reportPath $(if ($GeneratePDF) {"-AsPdf"}) -StudentName $NomEtudiant
         }
         #endregion

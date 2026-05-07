@@ -1,11 +1,11 @@
 # Windows Server 2025 Lab
 
-> Lab complet Windows Server 2025 avec Active Directory, DNS, DHCP, GPO, LAPS, PKI, DFS/FSRM, NPS/RADIUS, Hyper-V, scripts PowerShell et 44 captures de validation.
+> Lab complet Windows Server 2025 avec Active Directory, DNS, DHCP, GPO, LAPS, PKI, DFS/FSRM, NPS/RADIUS, Hyper-V, sécurité offensive contrôlée, scripts PowerShell et 55 captures de validation.
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-5391FE?logo=powershell&logoColor=white)
 ![Windows Server](https://img.shields.io/badge/Windows%20Server-2025-0078D4?logo=windows&logoColor=white)
 ![Status](https://img.shields.io/badge/Lab-Completed-success)
-![Screenshots](https://img.shields.io/badge/Screenshots-44-blue)
+![Screenshots](https://img.shields.io/badge/Screenshots-55-blue)
 
 ## Aperçu
 
@@ -24,6 +24,7 @@ Il contient :
 - services d'infrastructure : DNS, DHCP, GPO, LAPS, PKI, LDAPS
 - services fichiers : SMB, DFS Namespace, FSRM, quotas, filtres
 - sécurité : PSO, durcissement SMB, `WDigest=0`, `LmCompatibilityLevel=5`
+- sécurité offensive contrôlée : OU de test, simulations purple team, collecte d'événements
 - accès réseau : NPS / RADIUS / règles pare-feu
 - validation finale automatisée avec `check_all.ps1`
 
@@ -38,6 +39,10 @@ Il contient :
 |---|---|
 | ![PKI](screenshots/16_CertSrv-CA-Console.png) | ![DFS](screenshots/29_DFS-Namespace.png) |
 | ![LAPS](screenshots/43_LAPS-GPO-Config.png) | ![NPS](screenshots/34_NPS-Console.png) |
+
+| OffensiveLab | Validation M20 |
+|---|---|
+| ![OffensiveLab](screenshots/45_TP08-Execution-Score.png) | ![M20](screenshots/54_CheckAll-M20.png) |
 
 ## Sommaire
 
@@ -71,13 +76,14 @@ windows server/
 │   ├── TP_04_AzureArc-Synthese.ps1    ← Module 16 – Azure Arc + validation avec score
 │   ├── TP_05_PKI-CA.ps1               ← Module 17 – PKI, CA, LDAPS, auto-enrôlement
 │   ├── TP_06_FileServer-DFS-FSRM.ps1  ← Module 18 – SMB, DFS, FSRM, lecteurs réseau
-│   └── TP_07_NPS-RADIUS.ps1           ← Module 19 – NPS, RADIUS, policies, GPO
+│   ├── TP_07_NPS-RADIUS.ps1           ← Module 19 – NPS, RADIUS, policies, GPO
+│   └── TP_08_Securite-Offensive.ps1   ← Module 20 – sécurité offensive contrôlée
 │
 ├── azure-arc/                         ← scripts Azure Arc
 │   ├── azure_arc_prepare.ps1          ← prérequis (modules Az + agent azcmagent)
 │   └── azure_arc_connect_mfa.ps1      ← connexion avec double auth MFA
 │
-├── screenshots/                       ← 44 captures finales du lab
+├── screenshots/                       ← 55 captures finales du lab
 │   ├── 01_AD-Domain-Controllers.png
 │   ├── 02_DNS-Manager.png
 │   ├── ...
@@ -133,8 +139,9 @@ Get-LapsADPassword -Identity PC01 -AsPlainText
 
 ## Livrables présents
 
-- 44 captures finales dans [screenshots](screenshots)
+- 55 captures finales dans [screenshots](screenshots)
 - documentation complète dans [docs/formation_ws2025.md](docs/formation_ws2025.md)
+- fiche TP sécurité offensive dans [docs/tp08_securite_offensive.md](docs/tp08_securite_offensive.md)
 - support PDF dans [docs/formation_ws2025.pdf](docs/formation_ws2025.pdf)
 - scripts de TP dans [lab](lab)
 - scripts de contrôle et correction dans [scripts](scripts)
@@ -159,6 +166,7 @@ Get-LapsADPassword -Identity PC01 -AsPlainText
 | M17 | PKI interne : ADCS + CA + LDAPS + Auto-enrôlement | ✅ 10/10 A Excellent |
 | M18 | File Server : DFS-N, FSRM, quotas, filtrage, GPO lecteurs | ✅ 12/12 A Excellent |
 | M19 | NPS/RADIUS : NPAS, clients RADIUS, policies, GPO, logs | ✅ 12/12 A Excellent |
+| M20 | Sécurité offensive contrôlée : scénarios, audit, rapports | 🧪 prêt à exécuter |
 
 Validation finale observée via `check_all.ps1` :
 
@@ -185,6 +193,7 @@ cd C:\Formation\lab
 .\START-Formation.ps1 -NomEtudiant "Prénom Nom" -Module 2    # OUs/GPOs
 .\START-Formation.ps1 -NomEtudiant "Prénom Nom" -Module 3    # LAPS/Sécurité/Hyper-V
 .\START-Formation.ps1 -NomEtudiant "Prénom Nom" -Module 4    # Azure Arc
+.\START-Formation.ps1 -NomEtudiant "Prénom Nom" -Module 5    # Sécurité offensive contrôlée
 
 # Tout enchaîner avec export PDF :
 .\START-Formation.ps1 -NomEtudiant "Prénom Nom" -Module Tous -GeneratePDF
@@ -260,6 +269,24 @@ cd C:\Formation\lab
 
 ---
 
+### TP08 — Sécurité offensive contrôlée / Purple Team
+
+```powershell
+.\TP_08_Securite-Offensive.ps1                         # tout : prepare + audit + simulation + detection
+.\TP_08_Securite-Offensive.ps1 -Module Prepare         # OU + comptes de test
+.\TP_08_Securite-Offensive.ps1 -Module Audit           # audit avance Windows/AD
+.\TP_08_Securite-Offensive.ps1 -Module Simulate        # simulations sans extraction de secrets
+.\TP_08_Securite-Offensive.ps1 -Module Detect          # rapport Markdown + CSV
+.\TP_08_Securite-Offensive.ps1 -Module Validate        # score du TP
+.\TP_08_Securite-Offensive.ps1 -Module Cleanup         # nettoyage de l'OU OffensiveLab
+
+# Option lab uniquement : crée un compte volontairement vulnérable AS-REP,
+# à supprimer ensuite avec -Module Cleanup.
+.\TP_08_Securite-Offensive.ps1 -Module Prepare -EnableVulnerableAccounts
+```
+
+---
+
 ### Azure Arc (Module 16)
 
 ```powershell
@@ -295,7 +322,7 @@ powershell -ExecutionPolicy Bypass -File C:\Formation\scripts\check_all.ps1
 
 ## Captures d'écran livrées
 
-Les captures finales sont stockées dans [screenshots](screenshots) avec la numérotation complète de `01` à `44`.
+Les captures finales sont stockées dans [screenshots](screenshots) avec la numérotation complète de `01` à `54`, plus deux variantes utiles pour les captures `48` et `53`.
 
 Chaque capture correspond à un contrôle précis du lab. La liste ci-dessous explique ce que montre chaque image et ce qu'elle valide.
 
@@ -486,6 +513,52 @@ Valide les paramètres de la GPO `GPO-LAPS-Configuration`.
 **44 — Validation finale `check_all.ps1`**  
 Capture de synthèse confirmant le bon état global du lab.  
 <img src="screenshots/44_Check-All-Script.png" width="70%" alt="44 Check All Script" />
+
+### 45 à 54 — Sécurité offensive contrôlée / TP08
+
+**45 — Score TP08**
+Montre la validation du module OffensiveLab avec un score `11/11`.
+<img src="screenshots/45_TP08-Execution-Score.png" width="70%" alt="45 TP08 Execution Score" />
+
+**46 — OU et objets OffensiveLab**
+Montre l'OU `OffensiveLab`, les comptes de test et le groupe associé.
+<img src="screenshots/46_AD-OU-OffensiveLab.png" width="70%" alt="46 AD OU OffensiveLab" />
+
+**48 — Événements OffensiveLab**
+Montre les événements de simulation émis par la source `SATOM-OffensiveLab`.
+<img src="screenshots/48_EventViewer-SATOM-OffensiveLab.png" width="70%" alt="48 EventViewer SATOM OffensiveLab" />
+
+**48 bis — Événements OffensiveLab dans la VM**
+Variante graphique depuis l'observateur d'événements de la VM.
+<img src="screenshots/48_EventViewer-SATOM-OffensiveLab-vm.png" width="70%" alt="48 EventViewer SATOM OffensiveLab VM" />
+
+**49 — Rapport Markdown TP08**
+Affiche le rapport `offensive_detection_report_*.md` généré par le TP.
+<img src="screenshots/49_TP08-Rapport-Markdown.png" width="70%" alt="49 TP08 Rapport Markdown" />
+
+**50 — Exports CSV TP08**
+Montre les fichiers CSV produits dans le dossier de détection.
+<img src="screenshots/50_TP08-Exports-CSV.png" width="70%" alt="50 TP08 Exports CSV" />
+
+**51 — Revue SPN**
+Affiche les comptes de service avec SPN utilisés pour la revue Kerberos.
+<img src="screenshots/51_TP08-SPN-Review.png" width="70%" alt="51 TP08 SPN Review" />
+
+**52 — Comptes sans préauthentification**
+Valide qu'aucun compte sans préauthentification Kerberos n'est présent hors exercice volontaire.
+<img src="screenshots/52_TP08-NoPreauth-Empty.png" width="70%" alt="52 TP08 No Preauth Empty" />
+
+**53 — Audit policy activée**
+Montre les catégories d'audit activées.
+<img src="screenshots/53_AuditPolicy-Enabled.png" width="70%" alt="53 Audit Policy Enabled" />
+
+**53 bis — Audit policy synthèse**
+Variante courte de la sortie `auditpol`.
+<img src="screenshots/53_AuditPolicy-Enabled-2.png" width="70%" alt="53 Audit Policy Enabled 2" />
+
+**54 — Validation globale M20**
+Montre la section `SECURITE OFFENSIVE CONTROLEE (M20)` dans `check_all.ps1`.
+<img src="screenshots/54_CheckAll-M20.png" width="70%" alt="54 CheckAll M20" />
 
 ---
 
